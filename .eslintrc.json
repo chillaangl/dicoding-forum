@@ -1,0 +1,18 @@
+{
+  "extends": ["react-app", "react-app/jest", "airbnb", "prettier"],
+  "plugins": ["react", "react-hooks", "import", "jsx-a11y", "prettier"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "import/no-extraneous-dependencies": "off",
+    "no-param-reassign": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".js"] }],
+    "import/prefer-default-export": "off",
+    "react/prop-types": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/button-has-type": "off",
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }]
+  }
+}
+  
