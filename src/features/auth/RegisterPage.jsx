@@ -1,45 +1,50 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { registerWithLoading } from "../../store/slices/authSlice";
 import Button from "../common/Button";
+
+const registerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 function RegisterPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const error = useSelector((state) => state.auth.error);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [localError, setLocalError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLocalError("");
-    setSuccess(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-    if (!name || !email || !password) {
-      setLocalError("All fields are required");
-      return;
-    }
-
-    if (password.length < 6) {
-      setLocalError("Password must be at least 6 characters");
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
-      await dispatch(registerWithLoading({ name, email, password })).unwrap();
+      await dispatch(
+        registerWithLoading({ name: data.name, email: data.email, password: data.password }),
+      ).unwrap();
       setSuccess(true);
       setTimeout(() => {
-        navigate("/login", { state: { email } });
+        navigate("/login", { state: { email: data.email } });
       }, 2000);
     } catch (err) {
-      const errorMessage =
-        typeof err === "string" ? err : err?.message || err?.toString() || "Registration failed";
-      setLocalError(errorMessage);
+      // Error is handled by Redux state
+      // Error message is displayed via Redux state in the UI
     }
   };
 
@@ -68,7 +73,7 @@ function RegisterPage() {
           <p>Registration successful! Redirecting to login...</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div style={{ marginBottom: "16px" }}>
             <label
               htmlFor="name"
@@ -79,16 +84,20 @@ function RegisterPage() {
             <input
               id="name"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              {...register("name")}
               style={{
                 width: "100%",
                 padding: "10px",
-                border: "1px solid #ddd",
+                border: errors.name ? "1px solid #dc3545" : "1px solid #ddd",
                 borderRadius: "4px",
                 fontSize: "16px",
               }}
             />
+            {errors.name && (
+              <p style={{ color: "#dc3545", fontSize: "14px", marginTop: "4px" }}>
+                {errors.name.message}
+              </p>
+            )}
           </div>
           <div style={{ marginBottom: "16px" }}>
             <label
@@ -100,16 +109,20 @@ function RegisterPage() {
             <input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email")}
               style={{
                 width: "100%",
                 padding: "10px",
-                border: "1px solid #ddd",
+                border: errors.email ? "1px solid #dc3545" : "1px solid #ddd",
                 borderRadius: "4px",
                 fontSize: "16px",
               }}
             />
+            {errors.email && (
+              <p style={{ color: "#dc3545", fontSize: "14px", marginTop: "4px" }}>
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div style={{ marginBottom: "16px" }}>
             <label
@@ -121,18 +134,22 @@ function RegisterPage() {
             <input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
               style={{
                 width: "100%",
                 padding: "10px",
-                border: "1px solid #ddd",
+                border: errors.password ? "1px solid #dc3545" : "1px solid #ddd",
                 borderRadius: "4px",
                 fontSize: "16px",
               }}
             />
+            {errors.password && (
+              <p style={{ color: "#dc3545", fontSize: "14px", marginTop: "4px" }}>
+                {errors.password.message}
+              </p>
+            )}
           </div>
-          {(localError || error) && (
+          {error && (
             <div
               style={{
                 marginBottom: "16px",
@@ -142,7 +159,7 @@ function RegisterPage() {
                 borderRadius: "4px",
               }}
             >
-              {localError || String(error || "An error occurred")}
+              {String(error || "An error occurred")}
             </div>
           )}
           <Button type="submit" variant="primary" style={{ width: "100%" }}>

@@ -68,3 +68,99 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Storybook
+
+This project uses Storybook for component development and documentation.
+
+### Running Storybook
+
+To start Storybook development server:
+
+```bash
+npm run storybook
+```
+
+This will start Storybook on [http://localhost:6006](http://localhost:6006)
+
+### Building Storybook
+
+To build a static version of Storybook:
+
+```bash
+npm run build-storybook
+```
+
+## Testing
+
+### Unit Tests
+
+Run unit tests:
+
+```bash
+npm test
+```
+
+Run unit tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+### E2E Tests
+
+Run E2E tests with Cypress:
+
+```bash
+npm run e2e
+```
+
+Run E2E tests in headed mode (interactive):
+
+```bash
+npm run e2e:headed
+```
+
+**Note:** E2E tests use MSW (Mock Service Worker) for API mocking when `REACT_APP_E2E=1` is set. This ensures stable, deterministic tests that don't depend on external API availability.
+
+To initialize MSW service worker (first time only):
+
+```bash
+npx msw init public/ --save
+```
+
+### Linting
+
+Run ESLint:
+
+```bash
+npm run lint
+```
+
+## CI/CD
+
+This project uses GitHub Actions for Continuous Integration. The CI workflow runs on:
+- Push to `master` or `main` branches
+- Pull requests
+
+**Branch Protection:** The main branch (`master` or `main`) is protected with required CI checks:
+- Lint checks must pass
+- Unit & Integration tests must pass
+- E2E tests must pass
+
+### CI Helper Scripts
+
+For testing CI locally or generating artifacts:
+
+```bash
+# Simulate CI failure (for testing CI error handling)
+npm run ci:fail
+
+# Run all CI checks locally (lint + tests)
+npm run ci:pass
+```
+
+**Note:** These scripts are useful for:
+- Testing CI failure scenarios (`ci:fail`)
+- Verifying all checks pass before pushing (`ci:pass`)
+- Generating screenshots for CI documentation (e.g., `1_ci_check_error.png`, `2_ci_check_pass.png`)
